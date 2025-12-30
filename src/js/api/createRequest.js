@@ -17,12 +17,11 @@ const createRequest = async (options = {}) => {
     };
     requestOptions.body = JSON.stringify(data);
   }
-
   const response = await fetch(requestUrl, requestOptions);
-
   if (!response.ok) {
     throw new Error(response.statusText);
   }
+
   return response.json();
 };
 
