@@ -22,6 +22,10 @@ const createRequest = async (options = {}) => {
     throw new Error(response.statusText);
   }
 
+  if (response.status === 204) {
+    return null;
+  }
+
   return response.json();
 };
 

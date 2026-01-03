@@ -26,7 +26,7 @@ export default class TicketService {
 
   update(id, data, callback) {
     createRequest({ method: 'updateById', id, data })
-      .then((updatedTicket) => callback(null, updatedTicket))
+      .then((allTickets) => callback(null, allTickets))
       .catch((err) => callback(err, null));
   }
 
