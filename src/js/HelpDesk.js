@@ -108,16 +108,18 @@ export default class HelpDesk {
     const { ticketElement } = ticketView;
 
     const ticketStatus = ticketElement.querySelector('.ticket-status');
+    const editBtn = ticketElement.querySelector('.edit-btn');
+
     ticketStatus.addEventListener('click', (e) => {
       e.stopPropagation();
       this.toggleTicketStatus(ticket);
     });
-    //
-    // editBtn.addEventListener('click', (e) => {
-    //   e.stopPropagation();
-    //   console.log('Редактировать тикет:', ticket.id);
-    //   this.editTicket(ticket);
-    // });
+
+    editBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      console.log('Редактировать тикет:', ticket.id);
+      this.editTicket(ticket);
+    });
     //
     // deleteBtn.addEventListener('click', (e) => {
     //   e.stopPropagation();
@@ -288,8 +290,7 @@ export default class HelpDesk {
   updateTicketElement(el, ticket) {
     const statusCheckbox = el.querySelector('.ticket-status');
     if (statusCheckbox) {
-      statusCheckbox.checked = ticket.status;
-      statusCheckbox.classList.toggle('done');
+      statusCheckbox.classList.toggle('done', ticket.status);
     }
 
     const nameElement = el.querySelector('.ticket-name');
