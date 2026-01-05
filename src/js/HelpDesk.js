@@ -109,34 +109,37 @@ export default class HelpDesk {
 
     const ticketStatus = ticketElement.querySelector('.ticket-status');
     const editBtn = ticketElement.querySelector('.edit-btn');
+    const deleteBtn = ticketElement.querySelector('.delete-btn');
+    const ticketContent = ticketElement.querySelector('.ticket-content');
 
     ticketStatus.addEventListener('click', (e) => {
       e.stopPropagation();
-      this.toggleTicketStatus(ticket);
+      this.toggleTicketStatus(ticket.id);
     });
 
     editBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       console.log('Редактировать тикет:', ticket.id);
-      this.editTicket(ticket);
+      this.editTicket(ticket.id);
     });
-    //
-    // deleteBtn.addEventListener('click', (e) => {
-    //   e.stopPropagation();
-    //   console.log('Удалить тикет:', ticket.id);
-    //   this.deleteTicket(ticket);
-    // });
-    //
-    // ticketContent.addEventListener('click', (e) => {
-    //   if (!e.target.closest('.ticket-actions')) {
-    //     this.showTicketDesc(ticket, li);
-    //   }
-    // });
+
+    deleteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      console.log('Удалить тикет:', ticket.id);
+      this.deleteTicket(ticket.id);
+    });
+
+    ticketContent.addEventListener('click', (e) => {
+      if (!e.target.closest('.ticket-actions')) {
+        this.showTicketDesc(ticket, ticketElement);
+      }
+    });
 
     return ticketElement;
   }
 
-  toggleTicketStatus(ticket) {
+  toggleTicketStatus(ticketId) {
+    const ticket = this.tickets.find((t) => t.id === ticketId);
     console.log('Меняем статус тикета', ticket);
 
     const updateData = {
@@ -145,7 +148,7 @@ export default class HelpDesk {
       status: !ticket.status,
     };
 
-    this.updateTicket(ticket.id, updateData);
+    this.updateTicket(ticketId, updateData);
   }
 
   showTicketDesc(ticket, ticketElement) {
@@ -156,6 +159,7 @@ export default class HelpDesk {
     if (!descriptionElement) {
       descriptionElement = document.createElement('div');
       descriptionElement.className = 'ticket-description';
+      descriptionElement.style.display = 'block';
 
       if (ticket.description) {
         descriptionElement.textContent = ticket.description;
@@ -180,14 +184,15 @@ export default class HelpDesk {
       }
       return;
     }
-    if (descriptionElement.style.display === 'none' || !descriptionElement.style.display) {
+    if (descriptionElement.style.display === 'none') {
       descriptionElement.style.display = 'block';
     } else {
       descriptionElement.style.display = 'none';
     }
   }
 
-  deleteTicket(ticket) {
+  deleteTicket(ticketId) {
+    const ticket = this.tickets.find((t) => t.id === ticketId);
     const confirmDelete = confirm('Вы уверены?');
 
     if (!confirmDelete) {
@@ -240,7 +245,8 @@ export default class HelpDesk {
     });
   }
 
-  editTicket(ticket) {
+  editTicket(ticketId) {
+    const ticket = this.tickets.find((t) => t.id === ticketId);
     console.log('Редактируем тикет:', ticket.id);
     this.showEditTicketForm(ticket);
   }
@@ -270,8 +276,7 @@ export default class HelpDesk {
         return;
       }
 
-      const indexOfUpdatedTicket = allTickets.findIndex((t) => t.id === id);
-      const updatedTicket = allTickets[indexOfUpdatedTicket];
+      const updatedTicket = allTickets.find((t) => t.id === id);
 
       console.log('Тикет обновлен', updatedTicket);
 
