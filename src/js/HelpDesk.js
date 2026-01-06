@@ -1,4 +1,5 @@
 import TicketView from './TicketView';
+import Modal from './Modal';
 
 /**
  *  Основной класс приложения
@@ -11,8 +12,8 @@ export default class HelpDesk {
     this.container = container;
     this.ticketService = ticketService;
     this.tickets = [];
-    this.currentModal = null;
-    this.currentForm = null;
+
+    this.modal = new Modal();
 
     this.onClickButton = this.onClickButton.bind(this);
   }
@@ -193,22 +194,35 @@ export default class HelpDesk {
 
   deleteTicket(ticketId) {
     const ticket = this.tickets.find((t) => t.id === ticketId);
-    const confirmDelete = confirm('Вы уверены?');
 
-    if (!confirmDelete) {
-      return;
-    }
+    const confirmDiv = document.createElement('div');
+    confirmDiv.textContent = `Подтвердите удаление тикета: ${ticket.name}`;
 
-    console.log('Удаляем тикет:', ticket.id);
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn btn-cancel';
+    cancelBtn.textContent = 'Отмена';
+    cancelBtn.addEventListener('click', this.modal.hide);
 
-    this.ticketService.delete(ticket.id, (err) => {
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'btn btn-delete';
+    deleteBtn.textContent = 'Удалить';
+    deleteBtn.addEventListener('click', () => {
+      this.modal.hide();
+      this.performDelete(ticketId);
+    });
+
+    this.modal.setTitle('Подтверждение удаления').setBody(confirmDiv).setFooter([cancelBtn, deleteBtn]).show();
+  }
+
+  performDelete(ticketId) {
+    console.log('Удаляем тикет:', ticketId);
+    this.ticketService.delete(ticketId, (err) => {
       if (err) {
         console.error('Ошибка при удалении тикета:', err);
         return;
       }
 
-      this.tickets = this.tickets.filter((t) => t.id !== ticket.id);
-
+      this.tickets = this.tickets.filter((t) => t.id !== ticketId);
       this.loadTickets();
     });
   }
