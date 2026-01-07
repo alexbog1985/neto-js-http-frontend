@@ -20,7 +20,6 @@ export default class Modal {
       }
     });
 
-
     this.modalContent = document.createElement('div');
     this.modalContent.className = 'modal-content';
 
@@ -65,6 +64,8 @@ export default class Modal {
 
     if (typeof content === 'string') {
       this.modalBody.textContent = content;
+    } else if (content instanceof HTMLElement) {
+      this.modalBody.append(content);
     }
 
     return this;

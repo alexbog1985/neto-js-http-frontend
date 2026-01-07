@@ -1,4 +1,5 @@
 import TicketView from './TicketView';
+import TicketForm from "./TicketForm";
 import Modal from './Modal';
 
 /**
@@ -80,7 +81,6 @@ export default class HelpDesk {
         return;
       }
 
-      console.log('Данные загружены', tickets);
       this.tickets = tickets;
       this.renderTickets();
     });
@@ -120,13 +120,11 @@ export default class HelpDesk {
 
     editBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      console.log('Редактировать тикет:', ticket.id);
       this.editTicket(ticket.id);
     });
 
     deleteBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      console.log('Удалить тикет:', ticket.id);
       this.deleteTicket(ticket.id);
     });
 
@@ -141,7 +139,6 @@ export default class HelpDesk {
 
   toggleTicketStatus(ticketId) {
     const ticket = this.tickets.find((t) => t.id === ticketId);
-    console.log('Меняем статус тикета', ticket);
 
     const updateData = {
       name: ticket.name,
@@ -153,8 +150,6 @@ export default class HelpDesk {
   }
 
   showTicketDesc(ticket, ticketElement) {
-    console.log('Показываем описание тикета', ticket.id);
-
     let descriptionElement = ticketElement.querySelector('.ticket-description');
 
     if (!descriptionElement) {
@@ -215,7 +210,6 @@ export default class HelpDesk {
   }
 
   performDelete(ticketId) {
-    console.log('Удаляем тикет:', ticketId);
     this.ticketService.delete(ticketId, (err) => {
       if (err) {
         console.error('Ошибка при удалении тикета:', err);
@@ -228,22 +222,22 @@ export default class HelpDesk {
   }
 
   showCreateTicketForm() {
-    const name = prompt('Введите название тикета:');
-    if (!name) return;
+    const ticketForm = new TicketForm();
+    const form = ticketForm.createForm();
 
-    const description = prompt('Введите описание:');
+    ticketForm.setOnSubmit((ticketData) => {
+      this.modal.hide();
+      this.createTicket(ticketData);
+    });
 
-    const ticketData = {
-      name,
-      description: description || '',
-    };
+    ticketForm.setOnCancel(() => {
+      this.modal.hide();
+    });
 
-    this.createTicket(ticketData);
+    this.modal.setTitle('Добавить тикет').setBody(form).setFooter([]).show();
   }
 
   createTicket(ticketData) {
-    console.log('Создаем новый тикет', ticketData);
-
     this.ticketService.create(ticketData, (err, newTicket) => {
       if (err) {
         console.error('Ошибка создания тикета', err);
@@ -251,17 +245,13 @@ export default class HelpDesk {
         return;
       }
 
-      console.log('Тикет создан', newTicket);
-
       this.tickets.push(newTicket);
-
       this.loadTickets();
     });
   }
 
   editTicket(ticketId) {
     const ticket = this.tickets.find((t) => t.id === ticketId);
-    console.log('Редактируем тикет:', ticket.id);
     this.showEditTicketForm(ticket);
   }
 
@@ -281,8 +271,6 @@ export default class HelpDesk {
   }
 
   updateTicket(id, ticketData) {
-    console.log('Обновляем тикет', id, ticketData);
-
     this.ticketService.update(id, ticketData, (err, allTickets) => {
       if (err) {
         console.error('Ошибка обновления тикета', err);
