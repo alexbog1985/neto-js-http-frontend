@@ -74,10 +74,14 @@ export default class Modal {
   setFooter(buttons = []) {
     this.modalFooter.innerHTML = '';
 
-    buttons.forEach((button) => {
-      this.modalFooter.append(button);
-    });
-
+    if (buttons.length === 0) {
+      this.modalFooter.style.display = 'none';
+    } else {
+      this.modalFooter.style.display = 'flex';
+      buttons.forEach((button) => {
+        this.modalFooter.append(button);
+      });
+    }
     return this;
   }
 

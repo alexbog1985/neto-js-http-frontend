@@ -1,5 +1,5 @@
 import TicketView from './TicketView';
-import TicketForm from "./TicketForm";
+import TicketForm from './TicketForm';
 import Modal from './Modal';
 
 /**
@@ -229,7 +229,6 @@ export default class HelpDesk {
       this.modal.hide();
       this.createTicket(ticketData);
     });
-
     ticketForm.setOnCancel(() => {
       this.modal.hide();
     });
@@ -256,18 +255,25 @@ export default class HelpDesk {
   }
 
   showEditTicketForm(ticket) {
-    const newName = prompt('Введите новое название:', ticket.name);
-    if (!newName) return;
+    const ticketForm = new TicketForm(ticket);
+    const form = ticketForm.createForm();
 
-    const newDescription = prompt('Введите новое описание:', ticket.description || '');
+    ticketForm.setOnSubmit((ticketData) => {
+      if (!ticketData.name.trim()) {
+        return;
+      }
 
-    const updateData = {
-      name: newName,
-      description: newDescription || '',
-      status: ticket.status,
-    };
+      ticketData.status = ticketData.status || false;
 
-    this.updateTicket(ticket.id, updateData);
+      this.modal.hide();
+      this.updateTicket(ticket.id, ticketData);
+    });
+
+    ticketForm.setOnCancel(() => {
+      this.modal.hide();
+    });
+
+    this.modal.setTitle('Редактировать тикет').setBody(form).setFooter([]).show();
   }
 
   updateTicket(id, ticketData) {
@@ -279,8 +285,6 @@ export default class HelpDesk {
       }
 
       const updatedTicket = allTickets.find((t) => t.id === id);
-
-      console.log('Тикет обновлен', updatedTicket);
 
       const index = this.tickets.findIndex((t) => t.id === id);
       if (index !== -1) {

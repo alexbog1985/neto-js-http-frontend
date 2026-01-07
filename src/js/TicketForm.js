@@ -33,7 +33,7 @@ export default class TicketForm {
 
     const nameInput = document.createElement('input');
     nameInput.type = 'text';
-    nameInput.id = 'ticket-name';
+    nameInput.name = 'ticket-name';
     nameInput.className = 'form-control';
     nameInput.required = true;
 
